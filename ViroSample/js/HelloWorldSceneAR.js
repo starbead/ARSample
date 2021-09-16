@@ -1,55 +1,79 @@
-'use strict';
+"use strict";
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from "react-native";
 
 import {
   ViroARScene,
   ViroText,
   ViroConstants,
-} from 'react-viro';
+  ViroButton,
+  ViroAnimations,
+} from "react-viro";
 
 export default class HelloWorldSceneAR extends Component {
-
   constructor() {
     super();
 
     // Set initial state here
     this.state = {
-      text : "Initializing AR..."
+      text: "Initializing AR...",
     };
 
     // bind 'this' to functions
     this._onInitialized = this._onInitialized.bind(this);
+    this._onEmailTap = this._onEmailTap.bind(this);
   }
 
   render() {
     return (
-      <ViroARScene onTrackingUpdated={this._onInitialized} >
-        <ViroText text={this.state.text} scale={[.5, .5, .5]} position={[0, 0, -1]} style={styles.helloWorldTextStyle} />
+      <ViroARScene onTrackingInitialized={this._onInitialized}>
+        <ViroText
+          text={this.state.text}
+          scale={[0.5, 0.5, 0.5]}
+          position={[0, 0, -5]}
+          style={styles.helloWorldTextStyle}
+        />
+
+        <ViroButton
+          source={require("./res/emailenclose.png")}
+          clickSource={require("./res/emailopen.png")}
+          position={[0, -1, -5]}
+          height={0.5}
+          width={0.5}
+          animation={{ name: "moveLeftandRight", run: true, loop: true }}
+          onClick={this._onEmailTap}
+        />
       </ViroARScene>
     );
   }
 
   _onInitialized(state, reason) {
-    if (state == ViroConstants.TRACKING_NORMAL) {
-      this.setState({
-        text : "Hello World!"
-      });
-    } else if (state == ViroConstants.TRACKING_NONE) {
-      // Handle loss of tracking
-    }
+    this.setState({
+      text: "테스트 AR",
+    });
+  }
+
+  _onEmailTap(state, source) {
+    this.setState({
+      text: "이벤트 확인",
+    });
   }
 }
+ViroAnimations.registerAnimations({
+  moveRight: { properties: { positionX: "+=0.5" }, duration: 1000 },
+  moveLeft: { properties: { positionX: "-=0.5" }, duration: 1000 },
+  moveLeftandRight: [["moveRight", "moveLeft", "moveLeft", "moveRight"]],
+});
 
 var styles = StyleSheet.create({
   helloWorldTextStyle: {
-    fontFamily: 'Arial',
+    fontFamily: "NotoSansCJK",
     fontSize: 30,
-    color: '#ffffff',
-    textAlignVertical: 'center',
-    textAlign: 'center',  
+    color: "#ffffff",
+    textAlignVertical: "center",
+    textAlign: "center",
   },
 });
 
